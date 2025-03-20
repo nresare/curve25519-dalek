@@ -22,11 +22,10 @@
 #![cfg_attr(not(feature = "rand_core"), doc = "```ignore")]
 //! # fn main() {
 //! // $ cargo add ed25519_dalek --features rand_core
-//! use rand::rngs::OsRng;
 //! use ed25519_dalek::SigningKey;
 //! use ed25519_dalek::Signature;
 //!
-//! let mut csprng = OsRng;
+//! let mut csprng = rand::rng();
 //! let signing_key: SigningKey = SigningKey::generate(&mut csprng);
 //! # }
 //! ```
@@ -36,9 +35,8 @@
 #![cfg_attr(feature = "rand_core", doc = "```")]
 #![cfg_attr(not(feature = "rand_core"), doc = "```ignore")]
 //! # fn main() {
-//! # use rand::rngs::OsRng;
 //! # use ed25519_dalek::SigningKey;
-//! # let mut csprng = OsRng;
+//! # let mut csprng = rand::rng();
 //! # let signing_key: SigningKey = SigningKey::generate(&mut csprng);
 //! use ed25519_dalek::{Signature, Signer};
 //! let message: &[u8] = b"This is a test of the tsunami alert system.";
@@ -52,9 +50,8 @@
 #![cfg_attr(feature = "rand_core", doc = "```")]
 #![cfg_attr(not(feature = "rand_core"), doc = "```ignore")]
 //! # fn main() {
-//! # use rand::rngs::OsRng;
 //! # use ed25519_dalek::{SigningKey, Signature, Signer};
-//! # let mut csprng = OsRng;
+//! # let mut csprng = rand::rng();
 //! # let signing_key: SigningKey = SigningKey::generate(&mut csprng);
 //! # let message: &[u8] = b"This is a test of the tsunami alert system.";
 //! # let signature: Signature = signing_key.sign(message);
@@ -69,12 +66,11 @@
 #![cfg_attr(feature = "rand_core", doc = "```")]
 #![cfg_attr(not(feature = "rand_core"), doc = "```ignore")]
 //! # fn main() {
-//! # use rand::rngs::OsRng;
 //! # use ed25519_dalek::SigningKey;
 //! # use ed25519_dalek::Signature;
 //! # use ed25519_dalek::Signer;
 //! use ed25519_dalek::{VerifyingKey, Verifier};
-//! # let mut csprng = OsRng;
+//! # let mut csprng = rand::rng();
 //! # let signing_key: SigningKey = SigningKey::generate(&mut csprng);
 //! # let message: &[u8] = b"This is a test of the tsunami alert system.";
 //! # let signature: Signature = signing_key.sign(message);
@@ -95,10 +91,9 @@
 #![cfg_attr(feature = "rand_core", doc = "```")]
 #![cfg_attr(not(feature = "rand_core"), doc = "```ignore")]
 //! # fn main() {
-//! # use rand::rngs::OsRng;
 //! # use ed25519_dalek::{SigningKey, Signature, Signer, VerifyingKey};
 //! use ed25519_dalek::{PUBLIC_KEY_LENGTH, SECRET_KEY_LENGTH, KEYPAIR_LENGTH, SIGNATURE_LENGTH};
-//! # let mut csprng = OsRng;
+//! # let mut csprng = rand::rng();
 //! # let signing_key: SigningKey = SigningKey::generate(&mut csprng);
 //! # let message: &[u8] = b"This is a test of the tsunami alert system.";
 //! # let signature: Signature = signing_key.sign(message);
@@ -115,11 +110,10 @@
 #![cfg_attr(feature = "rand_core", doc = "```")]
 #![cfg_attr(not(feature = "rand_core"), doc = "```ignore")]
 //! # use core::convert::{TryFrom, TryInto};
-//! # use rand::rngs::OsRng;
 //! # use ed25519_dalek::{SigningKey, Signature, Signer, VerifyingKey, SecretKey, SignatureError};
 //! # use ed25519_dalek::{PUBLIC_KEY_LENGTH, SECRET_KEY_LENGTH, KEYPAIR_LENGTH, SIGNATURE_LENGTH};
 //! # fn do_test() -> Result<(SigningKey, VerifyingKey, Signature), SignatureError> {
-//! # let mut csprng = OsRng;
+//! # let mut csprng = rand::rng();
 //! # let signing_key_orig: SigningKey = SigningKey::generate(&mut csprng);
 //! # let message: &[u8] = b"This is a test of the tsunami alert system.";
 //! # let signature_orig: Signature = signing_key_orig.sign(message);
@@ -192,10 +186,9 @@
 #![cfg_attr(all(feature = "rand_core", feature = "serde"), doc = "```")]
 #![cfg_attr(not(all(feature = "rand_core", feature = "serde")), doc = "```ignore")]
 //! # fn main() {
-//! # use rand::rngs::OsRng;
 //! # use ed25519_dalek::{SigningKey, Signature, Signer, Verifier, VerifyingKey};
 //! use bincode::serialize;
-//! # let mut csprng = OsRng;
+//! # let mut csprng = rand::rng();
 //! # let signing_key: SigningKey = SigningKey::generate(&mut csprng);
 //! # let message: &[u8] = b"This is a test of the tsunami alert system.";
 //! # let signature: Signature = signing_key.sign(message);
@@ -213,12 +206,11 @@
 #![cfg_attr(all(feature = "rand_core", feature = "serde"), doc = "```")]
 #![cfg_attr(not(all(feature = "rand_core", feature = "serde")), doc = "```ignore")]
 //! # fn main() {
-//! # use rand::rngs::OsRng;
 //! # use ed25519_dalek::{SigningKey, Signature, Signer, Verifier, VerifyingKey};
 //! # use bincode::serialize;
 //! use bincode::deserialize;
 //!
-//! # let mut csprng = OsRng;
+//! # let mut csprng = rand::rng();
 //! # let signing_key: SigningKey = SigningKey::generate(&mut csprng);
 //! let message: &[u8] = b"This is a test of the tsunami alert system.";
 //! # let signature: Signature = signing_key.sign(message);

@@ -180,7 +180,7 @@ mod vectors {
 
     // Pick a random Scalar
     fn non_null_scalar() -> Scalar {
-        let mut rng = rand::rngs::OsRng;
+        let mut rng = rand::rng();
         let mut s_candidate = Scalar::random(&mut rng);
         while s_candidate == Scalar::ZERO {
             s_candidate = Scalar::random(&mut rng);
@@ -288,7 +288,6 @@ mod vectors {
 #[cfg(feature = "rand_core")]
 mod integrations {
     use super::*;
-    use rand::rngs::OsRng;
     use std::collections::HashMap;
 
     #[test]
@@ -298,7 +297,7 @@ mod integrations {
         let good: &[u8] = "test message".as_bytes();
         let bad: &[u8] = "wrong message".as_bytes();
 
-        let mut csprng = OsRng;
+        let mut csprng = rand::rng();
 
         let signing_key: SigningKey = SigningKey::generate(&mut csprng);
         let verifying_key = signing_key.verifying_key();
@@ -340,7 +339,7 @@ mod integrations {
         let good: &[u8] = b"test message";
         let bad: &[u8] = b"wrong message";
 
-        let mut csprng = OsRng;
+        let mut csprng = rand::rng();
 
         // ugh… there's no `impl Copy for Sha512`… i hope we can all agree these are the same hashes
         let mut prehashed_good1: Sha512 = Sha512::default();
@@ -415,7 +414,7 @@ mod integrations {
             b"Fuck dumbin' it down, spit ice, skip jewellery: Molotov cocktails on me like accessories.",
             b"Hey, I never cared about your bucks, so if I run up with a mask on, probably got a gas can too.",
             b"And I'm not here to fill 'er up. Nope, we came to riot, here to incite, we don't want any of your stuff.", ];
-        let mut csprng = OsRng;
+        let mut csprng = rand::rng();
         let mut signing_keys: Vec<SigningKey> = Vec::new();
         let mut signatures: Vec<Signature> = Vec::new();
 
@@ -434,7 +433,7 @@ mod integrations {
 
     #[test]
     fn public_key_hash_trait_check() {
-        let mut csprng = OsRng {};
+        let mut csprng = rand::rng();
         let secret: SigningKey = SigningKey::generate(&mut csprng);
         let public_from_secret: VerifyingKey = (&secret).into();
 
@@ -461,7 +460,7 @@ mod integrations {
 
     #[test]
     fn montgomery_and_edwards_conversion() {
-        let mut rng = rand::rngs::OsRng;
+        let mut rng = rand::rng();
         let signing_key = SigningKey::generate(&mut rng);
         let verifying_key = signing_key.verifying_key();
 

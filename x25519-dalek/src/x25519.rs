@@ -16,8 +16,9 @@
 
 use curve25519_dalek::{edwards::EdwardsPoint, montgomery::MontgomeryPoint, traits::IsIdentity};
 
-use rand_core::CryptoRng;
-use rand_core::RngCore;
+#[cfg(feature = "getrandom")]
+use rand_core::{OsRng, TryRngCore};
+use rand_core::{RngCore, CryptoRng};
 
 #[cfg(feature = "zeroize")]
 use zeroize::{Zeroize, ZeroizeOnDrop};
@@ -100,7 +101,7 @@ impl EphemeralSecret {
     /// Generate a new [`EphemeralSecret`].
     #[cfg(feature = "getrandom")]
     pub fn random() -> Self {
-        Self::random_from_rng(rand_core::OsRng)
+        Self::random_from_rng(rand::rng())
     }
 }
 
@@ -162,7 +163,9 @@ impl ReusableSecret {
     /// Generate a new [`ReusableSecret`].
     #[cfg(feature = "getrandom")]
     pub fn random() -> Self {
-        Self::random_from_rng(rand_core::OsRng)
+        let mut bytes = [0u8; 32];
+        OsRng.try_fill_bytes(&mut bytes).expect("Failed to read from OsRng");
+        ReusableSecret(bytes)
     }
 }
 
@@ -222,7 +225,9 @@ impl StaticSecret {
     /// Generate a new [`StaticSecret`].
     #[cfg(feature = "getrandom")]
     pub fn random() -> Self {
-        Self::random_from_rng(rand_core::OsRng)
+        let mut bytes = [0u8; 32];
+        OsRng.try_fill_bytes(&mut bytes).expect("Failed to read from OsRng");
+        StaticSecret(bytes)
     }
 
     /// Extract this key's bytes for serialization.
@@ -338,7 +343,7 @@ impl AsRef<[u8]> for SharedSecret {
 /// # Example
 #[cfg_attr(feature = "static_secrets", doc = "```")]
 #[cfg_attr(not(feature = "static_secrets"), doc = "```ignore")]
-/// use rand_core::OsRng;
+/// let mut rng = rand::rng();
 /// use rand_core::RngCore;
 ///
 /// use x25519_dalek::x25519;
@@ -346,11 +351,11 @@ impl AsRef<[u8]> for SharedSecret {
 /// use x25519_dalek::PublicKey;
 ///
 /// // Generate Alice's key pair.
-/// let alice_secret = StaticSecret::random_from_rng(&mut OsRng);
+/// let alice_secret = StaticSecret::random_from_rng(&mut rng);
 /// let alice_public = PublicKey::from(&alice_secret);
 ///
 /// // Generate Bob's key pair.
-/// let bob_secret = StaticSecret::random_from_rng(&mut OsRng);
+/// let bob_secret = StaticSecret::random_from_rng(&mut rng);
 /// let bob_public = PublicKey::from(&bob_secret);
 ///
 /// // Alice and Bob should now exchange their public keys.

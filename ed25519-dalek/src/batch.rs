@@ -56,10 +56,6 @@ impl rand_core::RngCore for ZeroRng {
     /// identical to the STROBE `MAC` operation.
     fn fill_bytes(&mut self, _dest: &mut [u8]) {}
 
-    fn try_fill_bytes(&mut self, dest: &mut [u8]) -> Result<(), rand_core::Error> {
-        self.fill_bytes(dest);
-        Ok(())
-    }
 }
 
 // `TranscriptRngBuilder::finalize()` requires a `CryptoRng`
@@ -118,10 +114,9 @@ fn gen_u128<R: RngCore>(rng: &mut R) -> u128 {
 /// use ed25519_dalek::{
 ///     verify_batch, SigningKey, VerifyingKey, Signer, Signature,
 /// };
-/// use rand::rngs::OsRng;
 ///
 /// # fn main() {
-/// let mut csprng = OsRng;
+/// let mut csprng = rand::rng();
 /// let signing_keys: Vec<_> = (0..64).map(|_| SigningKey::generate(&mut csprng)).collect();
 /// let msg: &[u8] = b"They're good dogs Brant";
 /// let messages: Vec<_> = (0..64).map(|_| msg).collect();

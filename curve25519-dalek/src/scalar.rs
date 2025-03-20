@@ -127,17 +127,18 @@ use group::ff::{Field, FromUniformBytes, PrimeField};
 #[cfg(feature = "group-bits")]
 use group::ff::{FieldBits, PrimeFieldBits};
 
-#[cfg(any(test, feature = "group"))]
-use rand_core::RngCore;
+//#[cfg(any(test, feature = "group"))]
+//use rand_core::RngCore;
 
 #[cfg(any(test, feature = "rand_core"))]
-use rand_core::CryptoRngCore;
+use rand_core::CryptoRng;
 
 #[cfg(feature = "digest")]
 use digest::generic_array::typenum::U64;
 #[cfg(feature = "digest")]
 use digest::Digest;
-
+#[cfg(feature = "group")]
+use rand_core::TryRngCore;
 use subtle::Choice;
 use subtle::ConditionallySelectable;
 use subtle::ConstantTimeEq;
@@ -589,12 +590,12 @@ impl Scalar {
     /// # fn main() {
     /// use curve25519_dalek::scalar::Scalar;
     ///
-    /// use rand_core::OsRng;
+    /// use rand::rng;
     ///
-    /// let mut csprng = OsRng;
+    /// let mut csprng = rng();
     /// let a: Scalar = Scalar::random(&mut csprng);
     /// # }
-    pub fn random<R: CryptoRngCore + ?Sized>(rng: &mut R) -> Self {
+    pub fn random<R: CryptoRng + ?Sized>(rng: &mut R) -> Self {
         let mut scalar_bytes = [0u8; 64];
         rng.fill_bytes(&mut scalar_bytes);
         Scalar::from_bytes_mod_order_wide(&scalar_bytes)
@@ -1213,11 +1214,10 @@ impl Field for Scalar {
     const ZERO: Self = Self::ZERO;
     const ONE: Self = Self::ONE;
 
-    fn random(mut rng: impl RngCore) -> Self {
-        // NOTE: this is duplicated due to different `rng` bounds
+    fn try_from_rng<R: TryRngCore + ?Sized>(rng: &mut R) -> Result<Self, R::Error> {
         let mut scalar_bytes = [0u8; 64];
-        rng.fill_bytes(&mut scalar_bytes);
-        Self::from_bytes_mod_order_wide(&scalar_bytes)
+        rng.try_fill_bytes(&mut scalar_bytes)?;
+        Ok(Self::from_bytes_mod_order_wide(&scalar_bytes))
     }
 
     fn square(&self) -> Self {
@@ -1396,6 +1396,7 @@ pub(crate) mod test {
 
     #[cfg(feature = "alloc")]
     use alloc::vec::Vec;
+    use rand_core::RngCore;
 
     /// x = 2238329342913194256032495932344128051776374960164957527413114840482143558222
     pub static X: Scalar = Scalar {
@@ -1552,7 +1553,7 @@ pub(crate) mod test {
 
     #[test]
     fn non_adjacent_form_random() {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
         for _ in 0..1_000 {
             let x = Scalar::random(&mut rng);
             for w in &[5, 6, 7, 8] {
@@ -2046,7 +2047,7 @@ pub(crate) mod test {
     // was reduced and b was clamped and unreduced. This checks that that was always well-defined.
     #[test]
     fn test_mul_reduction_invariance() {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         for _ in 0..10 {
             // Also define c that's clamped. We'll make sure that clamping doesn't affect

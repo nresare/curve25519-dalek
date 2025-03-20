@@ -1,6 +1,6 @@
 #![allow(non_snake_case)]
 
-use rand::{rngs::OsRng, thread_rng};
+
 
 use criterion::{
     criterion_main, measurement::Measurement, BatchSize, BenchmarkGroup, BenchmarkId, Criterion,
@@ -46,7 +46,7 @@ mod edwards_benches {
 
     fn vartime_double_base_scalar_mul<M: Measurement>(c: &mut BenchmarkGroup<M>) {
         c.bench_function("Variable-time aA+bB, A variable, B fixed", |bench| {
-            let mut rng = thread_rng();
+            let mut rng = rand::rng();
             let A = EdwardsPoint::mul_base(&Scalar::random(&mut rng));
             bench.iter_batched(
                 || (Scalar::random(&mut rng), Scalar::random(&mut rng)),
@@ -78,12 +78,12 @@ mod multiscalar_benches {
     use curve25519_dalek::traits::VartimePrecomputedMultiscalarMul;
 
     fn construct_scalars(n: usize) -> Vec<Scalar> {
-        let mut rng = thread_rng();
+        let mut rng = rand::rng();
         (0..n).map(|_| Scalar::random(&mut rng)).collect()
     }
 
     fn construct_points(n: usize) -> Vec<EdwardsPoint> {
-        let mut rng = thread_rng();
+        let mut rng = rand::rng();
         (0..n)
             .map(|_| EdwardsPoint::mul_base(&Scalar::random(&mut rng)))
             .collect()
@@ -249,7 +249,7 @@ mod ristretto_benches {
                 BenchmarkId::new("Batch Ristretto double-and-encode", *batch_size),
                 &batch_size,
                 |b, &&size| {
-                    let mut rng = OsRng;
+                    let mut rng = rand::rng();
                     let points: Vec<RistrettoPoint> = (0..size)
                         .map(|_| RistrettoPoint::random(&mut rng))
                         .collect();
@@ -301,7 +301,7 @@ mod scalar_benches {
     use super::*;
 
     fn scalar_arith<M: Measurement>(c: &mut BenchmarkGroup<M>) {
-        let mut rng = thread_rng();
+        let mut rng = rand::rng();
 
         c.bench_function("Scalar inversion", |b| {
             let s = Scalar::from(897987897u64).invert();
@@ -331,12 +331,12 @@ mod scalar_benches {
     }
 
     fn batch_scalar_inversion<M: Measurement>(c: &mut BenchmarkGroup<M>) {
+        let mut rng = rand::rng();
         for batch_size in &BATCH_SIZES {
             c.bench_with_input(
                 BenchmarkId::new("Batch scalar inversion", *batch_size),
                 &batch_size,
                 |b, &&size| {
-                    let mut rng = OsRng;
                     let scalars: Vec<Scalar> =
                         (0..size).map(|_| Scalar::random(&mut rng)).collect();
                     b.iter(|| {

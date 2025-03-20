@@ -181,29 +181,31 @@ fn rfc7748_ladder_test2() {
 mod rand_core {
 
     use super::*;
-    use ::rand_core::OsRng;
 
     #[test]
     fn ephemeral_from_rng() {
+        let mut rng = rand::rng();
         #[allow(deprecated)]
-        EphemeralSecret::new(OsRng);
-        EphemeralSecret::random_from_rng(OsRng);
+        EphemeralSecret::new(&mut rng);
+        EphemeralSecret::random_from_rng(&mut rng);
     }
 
     #[test]
     #[cfg(feature = "reusable_secrets")]
     fn reusable_from_rng() {
+        let mut rng = rand::rng();
         #[allow(deprecated)]
-        ReusableSecret::new(OsRng);
-        ReusableSecret::random_from_rng(OsRng);
+        ReusableSecret::new(&mut rng);
+        ReusableSecret::random_from_rng(&mut rng);
     }
 
     #[test]
     #[cfg(feature = "static_secrets")]
     fn static_from_rng() {
+        let mut rng = rand::rng();
         #[allow(deprecated)]
-        StaticSecret::new(OsRng);
-        StaticSecret::random_from_rng(OsRng);
+        StaticSecret::new(&mut rng);
+        StaticSecret::random_from_rng(&mut rng);
     }
 }
 
